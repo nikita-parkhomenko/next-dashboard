@@ -1,4 +1,3 @@
-import { CustomerField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
   CheckIcon,
@@ -6,11 +5,14 @@ import {
   CurrencyDollarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
+
 import { Button } from '@/app/ui/button';
+import { CustomerField } from '@/app/lib/definitions';
+import { createInvoiceAction } from '@/app/dashboard/invoices/actions';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   return (
-    <form>
+    <form action={createInvoiceAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
