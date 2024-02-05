@@ -1,15 +1,16 @@
 'use client';
 
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import Link from 'next/link';
+import { useFormState } from 'react-dom';
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import Link from 'next/link';
 
 import { Button } from '@/app/ui/button';
+import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
 import { updateInvoiceAction } from '@/app/dashboard/invoices/actions';
 
 export default function EditInvoiceForm({
@@ -19,10 +20,12 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
-  const updateInvoiceById = updateInvoiceAction.bind(null, invoice.id);
+  const initialValues = { message: null, errors: {} };
+  const [state, dispatch] = useFormState(updateInvoiceAction, initialValues);
 
   return (
-    <form action={updateInvoiceById}>
+    <form action={dispatch}>
+      <input type="hidden" name="invoiceId" defaultValue={invoice.id} />
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -47,6 +50,15 @@ export default function EditInvoiceForm({
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
+          {state.errors?.customerId && (
+            <div>
+              {state.errors.customerId.map((error) => (
+                <p className="pt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Invoice Amount */}
@@ -68,10 +80,19 @@ export default function EditInvoiceForm({
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
+          {state.errors?.amount && (
+            <div>
+              {state.errors.amount.map((error) => (
+                <p className="pt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Invoice Status */}
-        <fieldset>
+        <fieldset className="mb-3">
           <legend className="mb-2 block text-sm font-medium">
             Set the invoice status
           </legend>
@@ -111,7 +132,21 @@ export default function EditInvoiceForm({
               </div>
             </div>
           </div>
+          {state.errors?.status && (
+            <div>
+              {state.errors.status.map((error) => (
+                <p className="pt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+            </div>
+          )}
         </fieldset>
+        {state.message && (
+          <div className="rounded bg-red-400 p-2">
+            <p className="text-center text-white">{state.message}</p>
+          </div>
+        )}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
